@@ -61,7 +61,7 @@ pipeline{
                  }
              }
          }
-         stage{
+         stage("execute ansible playboooks"){
              steps{
                  script{
                      echo "running ansible playbook"
