@@ -54,7 +54,7 @@ pipeline{
                      echo "Copying ansible files from Jenkins server to ACM"
 
                      sshagent(['ansible-server-key']) {
-                sh "scp ansible/* ${ANSIBLE_SERVER}:/home/ec2-user"
+                sh "scp -o StrictHostKeyChecking=no ansible/* ${ANSIBLE_SERVER}:/home/ec2-user"
     withCredentials([sshUserPrivateKey(credentialsId: 'ansible-target-key',keyFileVariable: 'keyfile',usernameVariable: 'user')]){
                        sh 'scp $keyfile $ANSIBLE_SERVER:/home/ec2-user/.ssh/id_rsa'
                        }
