@@ -62,5 +62,15 @@ pipeline{
                  }
              }
          }
+         stage{
+             steps{
+                 script{
+                     echo "running ansible playbook"
+                      sshagent(['ansible-server-key']) {
+                sh "scp -o StrictHostKeyChecking=no ./prepare-ACM.sh ${ANSIBLE_SERVER}:/home/ec2-user"
+                sh "ssh -o StrictHostKeyChecking=no ${ANSIBLE_SERVER} bash /home/ec2-user/prepare-ACM.sh 
+                 }
+             }
+         }
     }
 }
