@@ -6,7 +6,7 @@ pipeline{
     }
     environment{
         APP_NAME='java-mvn-app'
-        ANSIBLE_SERVER="ec2-user@172.31.45.48"
+        ANSIBLE_SERVER="ec2-user@172.31.42.166"
     }
     parameters{
         choice(name:'VERSION',choices:['1.1.0','1.2.0','1.3.0'],description:'version of the code')
