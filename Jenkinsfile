@@ -48,8 +48,12 @@ pipeline{
             }
         }
         stage("Deploy the docker container"){
+            steps{
+                script{
             echo "deploying the app"
             sh 'sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER'
         }
+            }
     }
+}
 }
