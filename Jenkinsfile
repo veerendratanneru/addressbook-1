@@ -5,13 +5,14 @@ pipeline {
             steps {
                 script{
                     echo "Compiling the code"
+                    echo "compileing the slave"
                     }
             }
         }
         stage('UnitTest') {
             steps {
                 script{
-                    echo "Runninh the test cases"
+                    echo "Running the test cases"
                 }
             }
         }
