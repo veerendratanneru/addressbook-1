@@ -1,26 +1,26 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("Compile"){
-            steps{
-              script{
-                 echo "Compiling the code"
-              }
+    stages {
+        stage('Compile') {
+            steps {
+                script{
+                    echo "Compiling the code"
+                    }
             }
         }
-        stage("test"){
-             steps{
+        stage('UnitTest') {
+            steps {
                 script{
-                  echo "Testing the code"
-              }
-             }
+                    echo "Runninh the test cases"
+                }
+            }
         }
-        stage("Package"){
-             steps{
+        stage('Package') {
+            steps {
                 script{
-                  echo "Packaging the code"
-              }
-             }
+                    echo "Packaging thr code"
+                }
+            }
         }
     }
 }
