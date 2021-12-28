@@ -20,6 +20,7 @@ pipeline {
             steps {
                 script{
                     echo "Running the test cases"
+                    git 'https://github.com/preethid/addressbook-1.git'
                     sh 'mvn test'
                 }
             }
@@ -33,7 +34,8 @@ pipeline {
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install java-1.8.0-openjdk-devel -y'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install git -y'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install maven -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'mvn package'"
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'git clone https://github.com/preethid/addressbook-1.git'"
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 '/home/ec2-user/addressbook-1/mvn package'"
       }
                   }
             }
