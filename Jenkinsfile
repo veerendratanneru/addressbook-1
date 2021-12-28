@@ -34,7 +34,6 @@ pipeline {
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install java-1.8.0-openjdk-devel -y'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install git -y'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install maven -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'git clone https://github.com/preethid/addressbook-1.git'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'cd /home/ec2-user/addressbook-1/'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'mvn package'"
         
