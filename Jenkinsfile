@@ -26,17 +26,11 @@ pipeline {
             }
         }
         stage('Package') {
-            agent any
-            steps {
-                script{
-                    echo "Packaging the code"
+           steps {
+                script{                   
                     sshagent(['build-server-key']) {
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install java-1.8.0-openjdk-devel -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install git -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install maven -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'cd /home/ec2-user/addressbook-1/'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'mvn package'"
-        
+                    echo "Packaging the code"
+    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'bash ./remote-server.sh'"
       }
                   }
             }
