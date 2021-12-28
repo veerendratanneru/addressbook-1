@@ -2,7 +2,7 @@
 sudo yum install java-1.8.0-openjdk-devel -y
 sudo yum install git -y
 sudo yum install maven -y
-if [-e "addressbook-1"]
+if [-s "addressbook-1"]
 then
   echo "repo is cloned"
 else
