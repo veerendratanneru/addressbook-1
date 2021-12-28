@@ -26,6 +26,7 @@ pipeline {
             }
         }
         stage('Package') {
+            agent any
            steps {
                 script{                   
                     sshagent(['build-server-key']) {
