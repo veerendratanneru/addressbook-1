@@ -32,7 +32,7 @@ pipeline {
                     sshagent(['build-server-key']) {
                     echo "Packaging the code"
     sh "scp server-script.sh ec2-user@172.31.0.252:/home/ec2-user"
-    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'bash ./remote-server.sh'"
+    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'bash ~/remote-server.sh'"
       }
                   }
             }
