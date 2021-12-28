@@ -29,8 +29,10 @@ pipeline {
             steps {
                 script{
                     echo "Packaging the code"
-                    sh 'mvn package'
-                    }
+                    sshagent(['build-server-key']) {
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'mvn package'"
+      }
+                  }
             }
         }
         stage('Deploy') {
