@@ -30,9 +30,9 @@ pipeline {
                 script{
                     echo "Packaging the code"
                     sshagent(['build-server-key']) {
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'yum install java-1.8.0-openjdk-devel -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'yum install git -y'"
-        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'yum install maven -y'"
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install java-1.8.0-openjdk-devel -y'"
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install git -y'"
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'sudo yum install maven -y'"
         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.0.252 'mvn package'"
       }
                   }
