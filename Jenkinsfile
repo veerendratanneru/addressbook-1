@@ -4,6 +4,9 @@ pipeline{
         maven 'mymaven'
         jdk 'myjava'
     }
+    environment{
+        APP_NAME='java-mvn-app'
+    }
     stages{
         stage("Compile"){
             steps{
@@ -52,8 +55,8 @@ pipeline{
             steps{
                 script{
             echo "deploying the app"
-            sh 'sudo /usr/local/bin/kubectl get nodes'
-            sh 'sudo /usr/local/bin/kubectl create -f Kubernetes/app.yml'
+            sh 'envsubst < java-mvn-deploy-svc.yml | sudo /usr/local/bin/kubectl apply -f -'
+            
         }
             }
     }
