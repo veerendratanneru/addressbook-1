@@ -30,7 +30,7 @@ pipeline {
                 }
             }
         }
-        stage('Package') {
+        stage('PACKAGE N BUild DOCKER IMAGE') {
             agent any
            steps {
                 script{                   
