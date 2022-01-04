@@ -58,3 +58,4 @@ sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devo
         }
     }
 }
+}
