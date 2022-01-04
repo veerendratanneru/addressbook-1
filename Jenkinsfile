@@ -43,10 +43,10 @@ sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 'bash ~/server-script
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker build -t devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER ."
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker login -u $USERNAME -p $PASSWORD"
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
-  
-}
+  }
                   }
             }
+        }
         }
         stage('Deploy') {
             agent any
@@ -57,5 +57,4 @@ sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devo
             }
         }
     }
-}
 }
