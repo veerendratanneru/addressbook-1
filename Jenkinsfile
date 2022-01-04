@@ -35,10 +35,16 @@ pipeline {
            steps {
                 script{                   
                     sshagent(['build-server-key']) {
-                    echo "Packaging the code"
-                    sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.44.109:/home/ec2-user"
-                    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.44.109 'bash ~/server-script.sh'"
+withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+    
+echo "Packaging the code"
+sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.47.225:/home/ec2-user"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 'bash ~/server-script.sh'"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker build -t devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER ."
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker login -u $USERNAME -p $PASSWORD"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
   
+}
       }
                   }
             }
