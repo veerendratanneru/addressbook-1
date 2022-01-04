@@ -40,7 +40,7 @@ withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable:
 echo "Packaging the code"
 sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.47.225:/home/ec2-user"
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 'bash ~/server-script.sh'"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker build -t devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER ."
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker build -t devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER /home/ec2-user/addressbook-1"
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker login -u $USERNAME -p $PASSWORD"
 sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
   }
