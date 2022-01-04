@@ -31,7 +31,7 @@ pipeline {
             }
         }
         stage('PACKAGE N BUild DOCKER IMAGE') {
-            agent any
+        agent any
            steps {
                 script{                   
                     sshagent(['build-server-key']) {
@@ -48,14 +48,21 @@ sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devo
             }
         }
         }
-        stage('Deploy') {
-            agent any
+        stage('Deploy to TEST SERVER') {
+          agent any
            steps {
-                script{
-                    echo "Deploying the app"
-                    sh "sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
-                  }
-            }
+                script{                   
+sshagent(['build-server-key']) {
+withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+echo "Running the docker container"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo yum install docker -y"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo systemctl start docker"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo docker login -u $USERNAME -p $PASSWORD"
+sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
+}
+    }
+}
+           }
         }
     }
 }
