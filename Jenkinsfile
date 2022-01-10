@@ -48,10 +48,17 @@ sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devo
             }
         }
         }
-        stage('Deploy to TEST SERVER') {
-          agent any
-           steps {
-                script{                   
+stage("Provision ec2 instance with TF"){
+    steps{
+        script{
+            terraform apply
+        }
+    }
+}
+stage('Deploy to TEST SERVER') {
+agent any
+    steps {
+    script{                   
 sshagent(['build-server-key']) {
 withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 echo "Running the docker container"
