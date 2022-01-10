@@ -1,75 +1,92 @@
-pipeline {
-    agent none
+pipeline{
+    agent any
     tools{
         jdk 'myjava'
         maven 'mymaven'
+          }
+    environment{
+        NEW_VERSION='1.4.0'
+        IMAGE = 'devopstrainer/java-mvn-privaterepos'
     }
-    stages {
-        stage('Compile') {
-            agent any
-            steps {
+    stages{
+        stage("COMPILE"){
+        steps{
                 script{
-                    echo "Compiling the code"
-                    git 'https://github.com/preethid/addressbook-1.git'
-                    sh 'mvn compile'
-                  }
-            }
-        }
-        stage('UnitTest') {
-            agent any
-            steps {
-                script{
-                    echo "Running the test cases"
-                    git 'https://github.com/preethid/addressbook-1.git'
-                    sh 'mvn test'
+                     echo "Compiling the code"
+                     sh 'mvn compile'
                 }
             }
-            post{
-                always{
-                    junit 'target/surefire-reports/*.xml'
+                    }
+        stage("UnitTest"){
+          steps{
+                script{
+             echo "Run the unit test"
+             sh 'mvn test'
+        }
+              }
+              post{
+                  always{
+                      junit 'target/surefire-reports/*.xml'
+                  }
+              }
+        }
+        stage("Package"){
+              steps{
+                script{
+              echo "Building the app"
+              echo "building version ${NEW_VERSION}"
+              sh 'mvn package'
+        }
+              }
+        }
+    stage("Builddockerimage"){      
+        steps{
+            script{
+                echo "Containerising the app"
+                sh 'sudo yum install docker -y'
+                sh 'sudo systemctl start docker'
+               withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                sh 'sudo docker build -t ${IMAGE}:$BUILD_NUMBER .'
+                  sh 'sudo docker login -u $USERNAME -p $PASSWORD'
+                 sh 'sudo docker push $IMAGE:$BUILD_NUMBER'
                 }
             }
         }
-        stage('PACKAGE N BUild DOCKER IMAGE') {
-        agent any
-           steps {
-                script{                   
-                    sshagent(['build-server-key']) {
-withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-    
-echo "Packaging the code"
-sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.47.225:/home/ec2-user"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 'bash ~/server-script.sh'"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker build -t devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER /home/ec2-user/addressbook-1"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker login -u $USERNAME -p $PASSWORD"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.47.225 sudo docker push devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
-  }
+    }
+    stage("Provision deploy server"){
+        environment{
+            AWS_ACCESS_KEY_ID =credentials("jenkins_aws_access_key_id")
+            AWS_SECRET_ACCESS_KEY=credentials("jenkins_aws_secret_access_key")
+        }
+        steps{
+            script{
+                dir('terraform'){
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve" 
+                     EC2_PUBLIC_IP = sh(
+                     script: "terraform output ec2-ip",
+                     returnStdout: true
+                   ).trim()
+                }
+          }
+        }   
+         }
+    stage("Deploydockercontainer"){
+        steps{
+            script{
+            echo "Waiting for ec2 instance to initialise"
+             sleep(time: 90, unit: "SECONDS")
+              echo "Deploying the app to ec2-instance provisioned bt TF"
+              echo "${EC2_PUBLIC_IP}"
+               def ShellCmd= "sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
+               sshagent(['deploy-server-ssh-key']) {
+                      withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_PUBLIC_IP} 'sudo docker login -u $USERNAME -p $PASSWORD'"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_PUBLIC_IP}  ${ShellCmd}"
+                          }
                   }
+                }
             }
         }
-        }
-stage("Provision ec2 instance with TF"){
-    steps{
-        script{
-            terraform apply
-        }
     }
-}
-stage('Deploy to TEST SERVER') {
-agent any
-    steps {
-    script{                   
-sshagent(['build-server-key']) {
-withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-echo "Running the docker container"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo yum install docker -y"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo systemctl start docker"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo docker login -u $USERNAME -p $PASSWORD"
-sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.42.6 sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
-}
-    }
-}
-           }
         }
-    }
-}
