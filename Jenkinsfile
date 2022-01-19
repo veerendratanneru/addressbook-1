@@ -78,12 +78,11 @@ pipeline{
              sleep(time: 90, unit: "SECONDS")
               echo "Deploying the app to ec2-instance provisioned bt TF"
               echo "${EC2_PUBLIC_IP}"
-               def ShellCmd= "sudo docker run -itd -P devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER"
                sshagent(['deploy-server-ssh-key']) {
                       withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_PUBLIC_IP} 'sudo docker login -u $USERNAME -p $PASSWORD'"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_PUBLIC_IP}  ${ShellCmd}"
-                          }
+                        sh "scp -o StrictHostKeyChecking=no ./prepare-ACM.sh ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_PUBLIC_IP} bash /home/ec2-user/prepare-ACM.sh"
+                            }
                   }
                 }
             }

@@ -1,0 +1,25 @@
+---
+- hosts: aws_ec2
+  become: true
+  become_user: root
+  tasks:
+  - name: Install docker
+    vars:
+      ansible_python_interpreter: /usr/bin/python
+    yum: name=docker state=present
+  - name: Start docker
+    service: name=docker state=started
+  - name: install docker-compose
+    get_url:
+        url: https://github.com/docker/compose/releases/download/1.21.0/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+  - name: Add ec2-user to docker grp
+    user:
+       name: ec2-user
+       groups: docker
+       append: yes
+  - name: Reconnect to server session
+    meta: reset_connection
+  - name: docker pull
+    command: docker run -itd -P nginx
