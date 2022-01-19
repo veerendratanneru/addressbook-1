@@ -43,7 +43,7 @@ pipeline{
         steps{
             script{
                 echo "Containerising the app"
-               sh 'sudo usermod -aG docker ec2-user'
+               sh 'sudo usermod -aG docker Jenkins'
                 sh 'sudo yum install docker -y'
                 sh 'sudo systemctl start docker'
                withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
