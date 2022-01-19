@@ -45,7 +45,7 @@ resource "aws_instance" "webserver" {
   associate_public_ip_address = true
   subnet_id = var.subnet_id
   vpc_security_group_ids = [aws_security_group.mywebsecurity.id]
-  key_name="newawskey"
+  key_name="ansiblekey"
   user_data =file("server-script.sh")
  
   tags={
