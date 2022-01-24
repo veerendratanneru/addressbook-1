@@ -57,7 +57,7 @@ pipeline{
          steps{
                 script{
             echo "deploying the app"
-            sh 'sudo /usr/local/bin/kubectl apply -f java-mvn-app.yml'                  }
+            sh 'envsubst < java-mvn-app.yml | sudo /usr/local/bin/kubectl apply -f -'                  }
             }
     }
 }
